@@ -340,9 +340,6 @@ class FoodSideMenu extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => SettingsPage()),
               );
             }),
-            _buildMenuItem(context, Icons.logout, "Logout", () {
-              // Implement logout functionality
-            }),
           ],
         ),
       ),
