@@ -45,7 +45,7 @@ void main() {
 class Utils {
   static GlobalKey<NavigatorState> mainListNav = GlobalKey();
   static GlobalKey<NavigatorState> mainAppNav = GlobalKey();
-  static const Color mainDark = Color(0xFFFF8900);
+  static const Color mainDark = Color(0xFFFF5252);
 }
 
 class SplashPage extends StatefulWidget {
@@ -87,9 +87,9 @@ class SplashPageState extends State<SplashPage> with SingleTickerProviderStateMi
               builder: (context, snapshot) {
                 if (_isAnimationLoaded) {
                   return Lottie.asset(
-                    'assets/food_animation.json',
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.height * 0.3,
+                    'assets/food.json',
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: MediaQuery.of(context).size.height * 0.5,
                     controller: _controller,
                     onLoaded: (composition) {
                       _controller
@@ -116,12 +116,13 @@ class SplashPageState extends State<SplashPage> with SingleTickerProviderStateMi
 
   Future<void> _loadAnimation() async {
     try {
-      await rootBundle.load('assets/food_animation.json');
+      await rootBundle.load('assets/food.json');
       if (mounted) {
         setState(() => _isAnimationLoaded = true);
       }
     } catch (e) {
       print("Error loading animation: $e");
+      setState(() => _isAnimationLoaded = false);
     }
   }
 }
@@ -169,6 +170,8 @@ class _FoodPagerState extends State<FoodPager> {
     'https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_1280.jpg',
     'https://asset.kompas.com/crops/CIiodr6ePijJKc5OD7U7jqvT3Is=/141x330:1273x1084/750x500/data/photo/2020/02/27/5e57d0b63b0bf.jpg',
     'https://asset.kompas.com/crops/XpSCCV4YR5WOsN4mrms3-3Qife0=/137x72:798x513/1200x800/data/photo/2022/07/21/62d8ed0d485d4.jpg',
+    'https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/98de0753-e6d3-483a-b706-43a922e40446_85930485-222a-4978-a155-23511f90ecf6_Go-Biz_20191209_015207.jpeg',
+    'https://asset.kompas.com/crops/YhyVl2Yi4elqlkSc0xWy6gxEMT0=/0x0:1000x667/750x500/data/photo/2021/08/29/612ae4c73f1cd.jpeg',
   ];
   int currentPage = 0;
   late PageController controller;
@@ -267,14 +270,14 @@ class FoodSideMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: Colors.orange[50], // Background color for the side menu
+        color: Colors.redAccent[50], // Background color for the side menu
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             // Header Section
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.orange,
+                color: Colors.redAccent,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
@@ -331,8 +334,11 @@ class FoodSideMenu extends StatelessWidget {
                  MaterialPageRoute(builder: (context) => ProfilePage()),
                );
             }),
-            _buildMenuItem(context, Icons.settings, "Settings", () {
-              // Navigate to Settings Page
+            _buildMenuItem(context, Icons.settings, "Setting", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
             }),
             _buildMenuItem(context, Icons.logout, "Logout", () {
               // Implement logout functionality
@@ -349,7 +355,7 @@ class FoodSideMenu extends StatelessWidget {
       leading: Icon(
         icon,
         size: 28,
-        color: Colors.orange, // Icon color
+        color: Colors.redAccent, // Icon color
       ),
       title: Text(
         title,
@@ -360,8 +366,8 @@ class FoodSideMenu extends StatelessWidget {
         ),
       ),
       onTap: onTap,
-      splashColor: Colors.orange[200], // Ripple effect color
-      hoverColor: Colors.orange[100], // Hover effect color (for web)
+      splashColor: Colors.red[200], // Ripple effect color
+      hoverColor: Colors.red[100], // Hover effect color (for web)
     );
   }
 }
@@ -394,7 +400,7 @@ class FoodBottomBar extends StatelessWidget {
           selectedFontSize: 12, // Kurangi ukuran font label terpilih
           unselectedFontSize: 10, // Kurangi ukuran font label tidak terpilih
           iconSize: 24, // Kurangi ukuran ikon
-          selectedItemColor: Colors.orange, // Warna item terpilih
+          selectedItemColor: Colors.redAccent, // Warna item terpilih
           unselectedItemColor: Colors.grey, // Warna item tidak terpilih
           backgroundColor: Colors.white, // Latar belakang putih
           elevation: 5, // Efek bayangan
@@ -458,7 +464,7 @@ class FoodFilterBar extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  backgroundColor: isSelected ? Colors.orange : Colors.grey[300],
+                  backgroundColor: isSelected ? Colors.redAccent : Colors.grey[300],
                   onSelected: (_) => service.filterByCategory(category),
                 ),
               );
@@ -628,7 +634,7 @@ class _FoodShopDetailsState extends State<FoodShopDetails> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.shopping_cart),
-                    onPressed: () => Navigator.pushNamed(context, '/shoppingcart'), // 🔥 Sekarang tombol selalu bisa ditekan
+                    onPressed: () => Navigator.pushNamed(context, '/shoppingcart'),
                   ),
                   if (cart.cartItems.isNotEmpty)
                     Positioned(
@@ -652,10 +658,16 @@ class _FoodShopDetailsState extends State<FoodShopDetails> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // Gambar dengan lebar penuh dan tinggi proporsional
             Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              padding: EdgeInsets.all(20),
-              child: Image.network(food.food_image!, fit: BoxFit.contain),
+              height: MediaQuery.of(context).size.height * 0.4, // Tinggi lebih besar
+              width: double.infinity, // Lebar penuh
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(food.food_image!),
+                  fit: BoxFit.cover, // Gambar menutupi area tanpa distorsi
+                ),
+              ),
             ),
             Padding(
               padding: EdgeInsets.all(16),
@@ -699,6 +711,7 @@ class _FoodShopDetailsState extends State<FoodShopDetails> {
                       _buildDetailItem('Tipe', food.food_type!),
                       _buildDetailItem('Berat', '${food.food_weight}g'),
                       _buildDetailItem('Stok', food.food_quantity.toString()),
+                      _buildDetailItem('Deskripsi', food.food_description.toString()),
                     ],
                   ),
                   SizedBox(height: 20),
@@ -719,11 +732,12 @@ class _FoodShopDetailsState extends State<FoodShopDetails> {
                   SizedBox(height: 25),
                   Consumer<FoodShoppingCartService>(
                     builder: (context, cart, _) {
-                      final isInCart = cart.cartItems.any((item) => item.food.food_id == food.food_id);
+                      final isInCart =
+                      cart.cartItems.any((item) => item.food.food_id == food.food_id);
 
                       return ElevatedButton(
                         onPressed: isInCart
-                            ? null // 🔥 Menonaktifkan tombol jika produk sudah di keranjang
+                            ? null
                             : () {
                           cart.addToCart(food, _quantity);
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -733,7 +747,7 @@ class _FoodShopDetailsState extends State<FoodShopDetails> {
                               duration: Duration(seconds: 1),
                             ),
                           );
-                          setState(() {}); // 🔥 Memperbarui UI setelah item ditambahkan
+                          setState(() {});
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isInCart ? Colors.grey : Utils.mainDark,
@@ -943,7 +957,7 @@ class FoodShoppingCartPage extends StatelessWidget {
                     SnackBar(content: Text('Keranjang telah dibersihkan!')),
                   );
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
                 child: Text('Bersihkan Keranjang',style: TextStyle(color: Colors.white),),
               ),
             ],
@@ -1074,11 +1088,12 @@ class FoodService extends ChangeNotifier {
 
   void loadFoods() {
     foods = [
+      // ROTI (5 macam)
       FoodModel(
         food_id: 1,
         food_name: 'Roti Keju',
         food_category: 'Roti',
-        food_type: 'Roti',
+        food_type: 'Roti keju lumer',
         food_weight: 200,
         food_quantity: 15,
         food_image:
@@ -1087,30 +1102,169 @@ class FoodService extends ChangeNotifier {
       ),
       FoodModel(
         food_id: 2,
-        food_name: 'Pizza Pepperoni',
-        food_category: 'Pizza',
-        food_type: 'Manis',
-        food_weight: 500,
-        food_quantity: 8,
-        food_image: 'https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_1280.jpg',
-        food_description: 'Pizza dengan topping pepperoni',
+        food_name: 'Roti Coklat',
+        food_category: 'Roti',
+        food_type: 'Roti manis isi coklat',
+        food_weight: 150,
+        food_quantity: 20,
+        food_image:
+        'https://static.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/p1/995/2024/09/03/Roti-Coklat-Belepotan-4067907849.jpg',
+        food_description: 'Roti manis dengan isi coklat leleh',
       ),
       FoodModel(
         food_id: 3,
-        food_name: 'Martabak Manis',
-        food_category: 'Martabak',
-        food_type: 'Manis',
-        food_weight: 300,
-        food_quantity: 20,
+        food_name: 'Roti Sosis',
+        food_category: 'Roti',
+        food_type: 'Roti isi sosis panggang',
+        food_weight: 250,
+        food_quantity: 10,
         food_image:
-          'https://pict.sindonews.net/webp/732/pena/news/2024/06/30/185/1406521/5-martabak-terenak-di-jakarta-dengan-topping-melimpah-ydj.webp',
-        food_description: 'Martabak manis dengan topping keju dan coklat',
+        'https://cdn.yummy.co.id/content-images/images/20220329/ZylkubwPCqfGddDmzYp7jrJA1Qf71Y3d-31363438353636383032d41d8cd98f00b204e9800998ecf8427e.jpg?x-oss-process=image/format,webp',
+        food_description: 'Roti empuk dengan sosis panggang',
       ),
       FoodModel(
         food_id: 4,
+        food_name: 'Roti Abon',
+        food_category: 'Roti',
+        food_type: 'Roti isi abon sapi',
+        food_weight: 180,
+        food_quantity: 12,
+        food_image:
+        'https://asset.kompas.com/crops/0vvzOS9ufiAMwihtnm3urS-zjfM=/3x0:700x465/1200x800/data/photo/2020/08/07/5f2cf0fc1592a.jpg',
+        food_description: 'Roti renyah dengan taburan abon sapi gurih',
+      ),
+      FoodModel(
+        food_id: 5,
+        food_name: 'Roti Gandum',
+        food_category: 'Roti',
+        food_type: 'Roti sehat dari gandum utuh',
+        food_weight: 220,
+        food_quantity: 18,
+        food_image:
+        'https://akcdn.detik.net.id/api/wm/2020/05/04/818b3fa0-93fc-4c2a-a29b-07fe68889f22_169.jpeg',
+        food_description: 'Roti sehat dengan bahan dasar gandum utuh',
+      ),
+
+      // PIZZA (5 macam)
+      FoodModel(
+        food_id: 6,
+        food_name: 'Pizza Pepperoni',
+        food_category: 'Pizza',
+        food_type: 'Pizza pepproni Manis',
+        food_weight: 500,
+        food_quantity: 8,
+        food_image:
+        'https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_1280.jpg',
+        food_description: 'Pizza dengan topping pepperoni',
+      ),
+      FoodModel(
+        food_id: 7,
+        food_name: 'Pizza Margherita',
+        food_category: 'Pizza',
+        food_type: 'Pizza klasik Italia',
+        food_weight: 450,
+        food_quantity: 10,
+        food_image:
+        'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60',
+        food_description: 'Pizza klasik dengan saus tomat, keju, dan basil',
+      ),
+      FoodModel(
+        food_id: 8,
+        food_name: 'Pizza Keju Ekstra',
+        food_category: 'Pizza',
+        food_type: 'Pizza dengan keju mozzarella ekstra',
+        food_weight: 600,
+        food_quantity: 5,
+        food_image:
+        'https://img.pikbest.com/backgrounds/20250220/pizza-with-extra-cheese-the-ultimate-gooey-delight_11541089.jpg!w700wp',
+        food_description: 'Pizza dengan lapisan keju mozzarella melimpah',
+      ),
+      FoodModel(
+        food_id: 9,
+        food_name: 'Pizza Sayuran',
+        food_category: 'Pizza',
+        food_type: 'Pizza vegetarian',
+        food_weight: 500,
+        food_quantity: 7,
+        food_image:
+        'https://static.cdntap.com/tap-assets-prod/wp-content/uploads/sites/24/2022/07/Sumber-Instagram-%40jinnys_pizzeria.jpg?width=450&quality=10',
+        food_description: 'Pizza dengan berbagai sayuran segar',
+      ),
+      FoodModel(
+        food_id: 10,
+        food_name: 'Pizza BBQ Ayam',
+        food_category: 'Pizza',
+        food_type: 'Pizza dengan saus BBQ dan ayam',
+        food_weight: 550,
+        food_quantity: 6,
+        food_image:
+        'https://img.pikbest.com/backgrounds/20250205/a-bbq-chicken-pizza-with-smoky-barbecue-sauce-grilled-red-onions-and-cilantro_11495753.jpg!w700wp',
+        food_description: 'Pizza dengan saus BBQ dan potongan daging ayam',
+      ),
+
+      // MARTABAK (5 macam)
+      FoodModel(
+        food_id: 11,
+        food_name: 'Martabak Manis',
+        food_category: 'Martabak',
+        food_type: 'Martabak manis keju coklat',
+        food_weight: 300,
+        food_quantity: 20,
+        food_image:
+        'https://pict.sindonews.net/webp/732/pena/news/2024/06/30/185/1406521/5-martabak-terenak-di-jakarta-dengan-topping-melimpah-ydj.webp',
+        food_description: 'Martabak manis dengan topping keju dan coklat',
+      ),
+      FoodModel(
+        food_id: 12,
+        food_name: 'Martabak Telur',
+        food_category: 'Martabak',
+        food_type: 'Martabak telur spesial',
+        food_weight: 400,
+        food_quantity: 15,
+        food_image:
+        'https://asset.kompas.com/crops/Xzs709vgbAaytq00ufQuV8MSnEw=/2x0:700x465/1200x800/data/photo/2024/06/20/6673ca79b28ca.jpg',
+        food_description: 'Martabak telur dengan isian daging sapi',
+      ),
+      FoodModel(
+        food_id: 13,
+        food_name: 'Martabak Pandan',
+        food_category: 'Martabak',
+        food_type: 'Martabak manis aroma pandan',
+        food_weight: 350,
+        food_quantity: 18,
+        food_image:
+        'https://asset.kompas.com/crops/IsYzuuy8CmzugJqm0m173yZd2lI=/100x67:900x600/1200x800/data/photo/2021/10/13/6166d287a512f.jpg',
+        food_description: 'Martabak manis dengan aroma pandan yang harum',
+      ),
+      FoodModel(
+        food_id: 14,
+        food_name: 'Martabak Keju Mozarella',
+        food_category: 'Martabak',
+        food_type: 'Martabak telor dengan keju mozarella',
+        food_weight: 300,
+        food_quantity: 10,
+        food_image:
+        'https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/98de0753-e6d3-483a-b706-43a922e40446_85930485-222a-4978-a155-23511f90ecf6_Go-Biz_20191209_015207.jpeg',
+        food_description: 'Martabak manis dengan taburan keju mozarella',
+      ),
+      FoodModel(
+        food_id: 15,
+        food_name: 'Martabak Coklat Kacang',
+        food_category: 'Martabak',
+        food_type: 'Martabak manis dengan coklat dan kacang',
+        food_weight: 300,
+        food_quantity: 12,
+        food_image:
+        'https://martabakpizzaorins.com/wp-content/uploads/2018/02/MM-CKW.jpg',
+        food_description: 'Martabak manis dengan topping coklat dan kacang',
+      ),
+
+      // PISANG GORENG (5 macam)
+      FoodModel(
+        food_id: 16,
         food_name: 'Pisang Crispy',
         food_category: 'Pisang Goreng',
-        food_type: 'Manis',
+        food_type: 'Pisang goreng crispy',
         food_weight: 300,
         food_quantity: 20,
         food_image:
@@ -1118,15 +1272,105 @@ class FoodService extends ChangeNotifier {
         food_description: 'Pisang crispy enak, manis dan cruncy',
       ),
       FoodModel(
-        food_id: 5,
+        food_id: 17,
+        food_name: 'Pisang Madu',
+        food_category: 'Pisang Goreng',
+        food_type: 'Pisang goreng dengan madu',
+        food_weight: 250,
+        food_quantity: 15,
+        food_image:
+        'https://akcdn.detik.net.id/community/media/visual/2022/08/01/pisang-goreng-madu.jpeg?w=700&q=90',
+        food_description: 'Pisang goreng dengan balutan madu manis',
+      ),
+      FoodModel(
+        food_id: 18,
+        food_name: 'Pisang Coklat',
+        food_category: 'Pisang Goreng',
+        food_type: 'Pisang goreng isi coklat',
+        food_weight: 200,
+        food_quantity: 18,
+        food_image:
+        'https://editor.pasundanekspres.id/storage/uploads/conten/rrwqEKrDNLPvuxFf.webp',
+        food_description: 'Pisang goreng dengan isian coklat leleh',
+      ),
+      FoodModel(
+        food_id: 19,
+        food_name: 'Pisang Keju',
+        food_category: 'Pisang Goreng',
+        food_type: 'Pisang goreng tabur keju',
+        food_weight: 250,
+        food_quantity: 10,
+        food_image:
+        'https://static.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p2/01/2024/08/19/Resep-Pisang-Keju-yang-Enak-dan-Crispy-Dijamin-Bikin-Nagih-35877987.jpg',
+        food_description: 'Pisang goreng dengan taburan keju parut',
+      ),
+      FoodModel(
+        food_id: 20,
+        food_name: 'Pisang Karamel',
+        food_category: 'Pisang Goreng',
+        food_type: 'Pisang goreng dengan karamel',
+        food_weight: 300,
+        food_quantity: 12,
+        food_image:
+        'https://asset-2.tstatic.net/tribunnewswiki/foto/bank/images/pisang-karamell.jpg',
+        food_description: 'Pisang goreng dengan saus karamel manis',
+      ),
+
+      // BAKSO (5 macam)
+      FoodModel(
+        food_id: 21,
         food_name: 'Bakso Pentol',
         food_category: 'Bakso',
-        food_type: 'Pedas',
+        food_type: 'Bakso pentol super pedas',
         food_weight: 200,
         food_quantity: 20,
         food_image:
         'https://static.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/p1/995/2024/03/31/C6F8E7D5-59C5-464F-B414-9B8F123DA607-894366844.jpeg',
-        food_description: 'Bakso pentol rasa poll wenak ',
+        food_description: 'Bakso pentol rasa poll wenak',
+      ),
+      FoodModel(
+        food_id: 22,
+        food_name: 'Bakso Urat',
+        food_category: 'Bakso',
+        food_type: 'Bakso urat kenyal',
+        food_weight: 250,
+        food_quantity: 15,
+        food_image:
+        'https://i.pinimg.com/736x/c1/8a/3c/c18a3c1c7244436f9e87ed19822d0976.jpg',
+        food_description: 'Bakso dengan tekstur kenyal dan urat',
+      ),
+      FoodModel(
+        food_id: 23,
+        food_name: 'Bakso Kuah Pedas',
+        food_category: 'Bakso',
+        food_type: 'Bakso kuah super pedas',
+        food_weight: 300,
+        food_quantity: 10,
+        food_image:
+        'https://cdn.idntimes.com/content-images/post/20240611/snapinstaapp-42003823-241325386729135-1009400321390767005-n-1080-950c242e80d9295be7ef8dabbe12b8ab_600x400.jpg',
+        food_description: 'Bakso dengan kuah pedas yang menggugah selera',
+      ),
+      FoodModel(
+        food_id: 24,
+        food_name: 'Bakso Goreng',
+        food_category: 'Bakso',
+        food_type: 'Bakso goreng renyah',
+        food_weight: 200,
+        food_quantity: 12,
+        food_image:
+        'https://asset.kompas.com/crops/YhyVl2Yi4elqlkSc0xWy6gxEMT0=/0x0:1000x667/750x500/data/photo/2021/08/29/612ae4c73f1cd.jpeg',
+        food_description: 'Bakso goreng dengan tekstur renyah di luar',
+      ),
+      FoodModel(
+        food_id: 25,
+        food_name: 'Bakso Tahu',
+        food_category: 'Bakso',
+        food_type: 'Bakso tahu campur',
+        food_weight: 350,
+        food_quantity: 8,
+        food_image:
+        'https://asset.kompas.com/crops/EVrkqpkbpWEAxfuov_spqCxhuco=/0x404:667x848/1200x800/data/photo/2023/03/09/64091bf4b8300.jpeg',
+        food_description: 'Bakso dengan campuran tahu yang lezat',
       ),
     ];
     notifyListeners();
@@ -1139,7 +1383,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Profile"),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.redAccent,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -1149,7 +1393,7 @@ class ProfilePage extends StatelessWidget {
             Container(
               height: 200,
               decoration: BoxDecoration(
-                color: Colors.orange,
+                color: Colors.redAccent,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
@@ -1193,18 +1437,6 @@ class ProfilePage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => EditProfilePage()),
               );
             }),
-            _buildProfileOption(context, Icons.lock, "Change Password", () {
-              // Navigate to Change Password Page
-            }),
-            _buildProfileOption(context, Icons.notifications, "Notifications", () {
-              // Navigate to Notifications Settings
-            }),
-            _buildProfileOption(context, Icons.payment, "Payment Methods", () {
-              // Navigate to Payment Methods Page
-            }),
-            _buildProfileOption(context, Icons.logout, "Logout", () {
-              _showLogoutDialog(context);
-            }),
           ],
         ),
       ),
@@ -1218,7 +1450,7 @@ class ProfilePage extends StatelessWidget {
       leading: Icon(
         icon,
         size: 28,
-        color: Colors.orange,
+        color: Colors.redAccent,
       ),
       title: Text(
         title,
@@ -1228,8 +1460,8 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
       onTap: onTap,
-      splashColor: Colors.orange[100],
-      hoverColor: Colors.orange[50],
+      splashColor: Colors.red[100],
+      hoverColor: Colors.red[50],
     );
   }
 
@@ -1257,7 +1489,7 @@ class ProfilePage extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
+              backgroundColor: Colors.redAccent,
             ),
             child: Text("Logout"),
           ),
@@ -1277,7 +1509,7 @@ class EditProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Profile"),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.redAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -1323,7 +1555,7 @@ class EditProfilePage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
+                backgroundColor: Colors.redAccent,
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
               child: Text("Save Changes", style: TextStyle(color: Colors.white),),
@@ -1335,5 +1567,320 @@ class EditProfilePage extends StatelessWidget {
     );
   }
 }
+
+class SettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Settings"),
+        backgroundColor: Colors.redAccent, // Warna biru sesuai tema
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Judul Section
+            Text(
+              "Account",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 10),
+
+            // Opsi Change Password
+            _buildProfileOption(
+              context,
+              Icons.lock,
+              "Change Password",
+                  () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangePasswordPage(),
+                  ),
+                );
+              },
+            ),
+
+            // Opsi Notifications
+            _buildProfileOption(
+              context,
+              Icons.notifications,
+              "Notifications",
+                  () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationsSettingsPage(),
+                  ),
+                );
+              },
+            ),
+
+
+            SizedBox(height: 20),
+
+            // Judul Section Logout
+            Text(
+              "Other",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 10),
+
+            // Opsi Logout
+            _buildProfileOption(
+              context,
+              Icons.logout,
+              "Logout",
+                  () {
+                _showLogoutDialog(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper function to build profile options
+  Widget _buildProfileOption(
+      BuildContext context, IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        size: 28,
+        color: Colors.redAccent,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+      onTap: onTap,
+      splashColor: Colors.red[100], // Efek ripple kuning
+      hoverColor: Colors.red[50], // Efek hover kuning (untuk web)
+    );
+  }
+
+  // Logout Confirmation Dialog
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Logout"),
+        content: Text("Are you sure you want to logout?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: Text(
+              "Cancel",
+              style: TextStyle(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Perform logout action here
+              Navigator.pop(context); // Close the dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SplashPage(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+            ),
+            child: Text("Logout", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Placeholder Pages for Navigation
+class ChangePasswordPage extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _currentPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Change Password"),
+        backgroundColor: Colors.redAccent,
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Change Your Password",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _currentPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: "Current Password",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.lock),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your current password";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 15),
+              TextFormField(
+                controller: _newPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: "New Password",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.lock_open),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a new password";
+                  } else if (value.length < 6) {
+                    return "Password must be at least 6 characters";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 15),
+              TextFormField(
+                controller: _confirmPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: "Confirm New Password",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.check_circle),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please confirm your new password";
+                  } else if (value != _newPasswordController.text) {
+                    return "Passwords do not match";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Simpan perubahan password di sini
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Password changed successfully!")),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                child: Text(
+                  "Save Changes",
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class NotificationsSettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Notifications Settings"),
+        backgroundColor: Colors.redAccent,
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Manage Your Notifications",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            _buildNotificationOption(context, Icons.notifications, "Order Updates", true),
+            _buildNotificationOption(context, Icons.email, "Promotions", false),
+            _buildNotificationOption(context, Icons.message, "Messages", true),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Simpan pengaturan notifikasi di sini
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Notification settings saved!")),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                minimumSize: Size(double.infinity, 50),
+              ),
+              child: Text(
+                "Save Changes",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationOption(BuildContext context, IconData icon, String title, bool initialValue) {
+    bool isSwitched = initialValue;
+    return ListTile(
+      leading: Icon(icon, size: 28, color: Colors.redAccent),
+      title: Text(title, style: TextStyle(fontSize: 16)),
+      trailing: Switch(
+        value: isSwitched,
+        onChanged: (value) {
+          // Update state switch
+          isSwitched = value;
+        },
+        activeColor: Colors.redAccent,
+      ),
+    );
+  }
+}
+
+
 
 
